@@ -1,0 +1,111 @@
+document.addEventListener('DOMContentLoaded', function() {
+    const calculator = {
+        displayValue: '0',
+        firstOperand: null,
+        waitingForSecondOperand: false,
+        operator: null,
+    };
+
+    function updateDisplay() {
+        const display = document.querySelector('.calculator-screen');
+        display.value = calculator.displayValue;
+    }
+
+    function handleKeyPress(key) {
+        const { displayValue, waitingForSecondOperand } = calculator;
+
+        if (waitingForSecondOperand === true) {
+            calculator.displayValue = key;
+            calculator.waitingForSecondOperand = false;
+        } else {
+            calculator.displayValue = displayValue === '0' ? key : displayValue + key;
+        }
+    }
+
+    function handleOperator(nextOperator) {
+        const { firstOperand, displayValue, operator } = calculator
+        const inputValue = parseFloat(displayValue);
+
+        if (operator && calculator.waitingForSecondOperand) {
+            calculator.operator = nextOperator;
+            return;
+        }
+
+        if (firstOperand == null && !isNaN(inputValue)) {
+            calculator.firstOperand = inputValue;
+        } else if (operator) {
+            const result = calculate(firstOperand, inputValue, operator);
+
+            calculator.displayValue = String(result);
+            calculator.firstOperand = result;
+        }
+
+        calculator.waitingForSecondOperand = true;
+        calculator.operator = nextOperator;
+    }
+
+    function calculate(firstOperand, secondOperand, operator) {
+        if (operator === '+') {
+            return firstOperand + secondOperand;
+        } else if (operator === '-') {
+            return firstOperand - secondOperand;
+        } else if (operator === '*') {
+            return firstOperand * secondOperand;
+        } else if (operator === '/') {
+            return firstOperand / secondOperand;
+        }
+
+        return secondOperand;
+    }
+
+    function resetCalculator() {
+        calculator.displayValue = '0';
+        calculator.firstOperand = null;
+        calculator.waitingForSecondOperand = false;
+        calculator.operator = null;
+    }
+
+    updateDisplay();
+
+    const keys = document.querySelector('.calculator-keys');
+    keys.addEventListener('click', function(event) {
+        const { target } = event;
+
+        if (!target.matches('button')) {
+            return;
+        }
+
+        if (target.classList.contains('operator')) {
+            handleOperator(target.value);
+            updateDisplay();
+            return;
+        }
+
+        if (target.classList.contains('all-clear')) {
+            resetCalculator();
+            updateDisplay();
+            return;
+        }
+
+        if (target.classList.contains('equal-sign')) {
+            handleOperator(target.value);
+            updateDisplay();
+            return;
+        }
+
+        handleKeyPress(target.value);
+        updateDisplay();
+    });
+});
+
+
+document.addEventListener("keydown", function (e) {
+    const key = e.key;
+    if ((key >= "0" && key <= "9") || key === "+" || key === "-" || key === "*" ||  key === "/") append (key)
+    else if(key === "ENTER") calculate ();
+    else if (key ==="backspace") deleteLast();
+
+  });
+         
+  
+   
